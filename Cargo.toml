@@ -1,0 +1,29 @@
+[package]
+name = "web-sys-query"
+version = "0.1.0"
+authors = ["Reyk Floeter <contact@reykfloeter.com>"]
+edition = "2018"
+license = "ISC"
+readme = "README.md"
+description = "Minimal jQuery-like API for web-sys"
+repository = "https://github.com/reyk/web-sys-query"
+categories = ["wasm", "web-assembly"]
+keywords = ["wasm", "jquery", "web-sys"]
+
+[dependencies]
+derive_more = "0.99"
+displaydoc = "0.1"
+thiserror = "1.0"
+wasm-bindgen = "0.2.69"
+js-sys = "0.3.46"
+
+[dependencies.web-sys]
+version = "0.3.46"
+features = [
+  "Document",
+  "DomTokenList",
+  "Element",
+  "HtmlElement",
+  "HtmlCollection",
+  "Window",
+]
