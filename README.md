@@ -11,6 +11,7 @@ you can use this crate to query the rather complex
 ## TODO
 
 - Documentation and examples
+- Unit tests
 - Selectors
 - AJAX
 - ...

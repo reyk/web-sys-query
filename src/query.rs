@@ -6,13 +6,6 @@ use std::{collections::VecDeque, convert::TryInto};
 use wasm_bindgen::JsCast;
 use web_sys::{HtmlCollection, HtmlElement};
 
-/// Cast `Element` to `HtmlElement`
-macro_rules! html_element {
-    ($obj:expr) => {
-        $obj.dyn_ref::<HtmlElement>().ok_or(Error::NotHtmlElement)
-    };
-}
-
 /// Document with jQuery-like methods.
 #[derive(AsRef, Clone, Deref, DerefMut)]
 pub struct Document(web_sys::Document);
@@ -28,10 +21,10 @@ impl Document {
     }
 
     pub fn find(&self, selector: &str) -> Collection {
-        if selector.starts_with('#') {
-            self.0.get_element_by_id(selector).into()
-        } else if selector.starts_with('.') {
-            self.0.get_elements_by_class_name(selector).into()
+        if let Some(selector) = selector.strip_prefix('#') {
+            self.0.get_element_by_id(&selector).into()
+        } else if let Some(selector) = selector.strip_prefix('.') {
+            self.0.get_elements_by_class_name(&selector).into()
         } else {
             self.0.get_elements_by_tag_name(selector).into()
         }
@@ -44,15 +37,15 @@ pub struct Element(web_sys::Element);
 
 impl Element {
     pub fn text(&self, text: &str) -> Result<(), Error> {
-        html_element!(self.0)?.set_inner_text(text);
+        self.dyn_ref::<web_sys::HtmlElement>()?.set_inner_text(text);
         Ok(())
     }
 
     pub fn find(&self, selector: &str) -> Collection {
         if selector.starts_with('#') {
             vec![].into()
-        } else if selector.starts_with('.') {
-            self.0.get_elements_by_class_name(selector).into()
+        } else if let Some(selector) = selector.strip_prefix('.') {
+            self.0.get_elements_by_class_name(&selector).into()
         } else {
             self.0.get_elements_by_tag_name(selector).into()
         }
@@ -77,6 +70,10 @@ impl Element {
     pub fn remove_attr(&self, key: &str) -> Result<(), Error> {
         self.0.remove_attribute(key).map_err(Into::into)
     }
+
+    pub fn dyn_ref<T: JsCast>(&self) -> Result<&T, Error> {
+        self.0.dyn_ref::<T>().ok_or(Error::DynRefFailed)
+    }
 }
 
 impl From<web_sys::Element> for Element {
@@ -99,7 +96,7 @@ pub struct Collection(VecDeque<Element>);
 
 impl Collection {
     pub fn first(&mut self) -> Result<Element, Error> {
-        self.0.pop_front().ok_or(Error::ElementNotFound)
+        self.0.pop_front().ok_or(Error::FirstElementNotFound)
     }
 
     pub fn text(&self, text: &str) -> Result<(), Error> {

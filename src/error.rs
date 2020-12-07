@@ -1,27 +1,29 @@
+use derive_more::From;
 use displaydoc::Display;
 use thiserror::Error;
 use wasm_bindgen::JsValue;
 
-#[derive(Debug, Display, Error)]
+#[derive(Debug, Display, Error, From)]
 pub enum Error {
     /// Child element not found: '{0}'
+    #[from(ignore)]
     ChildElementNotFound(&'static str),
     /// DOM element not found: '{0}'
+    #[from(ignore)]
     DomElementNotFound(&'static str),
     /// Element ID not found: '{0}'
+    #[from(ignore)]
     ElementIdNotFound(&'static str),
-    /// Element not found
-    ElementNotFound,
-    /// Failed to case to HTML element
+    /// First element in collection not found
+    FirstElementNotFound,
+    /// Failed to get dynamic reference type
+    DynRefFailed,
+    /// Failed to cast to HTML element
     NotHtmlElement,
+    /// Failed to cast to `EventTarget`
+    NotEventTarget,
     /// Other Error
     JsValue(JsValue),
-}
-
-impl From<JsValue> for Error {
-    fn from(value: JsValue) -> Self {
-        Error::JsValue(value)
-    }
 }
 
 impl Into<JsValue> for Error {
