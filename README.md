@@ -12,6 +12,5 @@ you can use this crate to query the rather complex
 
 - Documentation and examples
 - Unit tests
-- Selectors
 - AJAX
 - ...

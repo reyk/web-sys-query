@@ -22,8 +22,15 @@ pub enum Error {
     NotHtmlElement,
     /// Failed to cast to `EventTarget`
     NotEventTarget,
+    /// `Document` without document `Element`
+    NoDocumentElement,
+    /// Cannot remote attribute: '{0}'
+    #[from(ignore)]
+    CannotRemoveAttribute(String),
     /// Other Error
     JsValue(JsValue),
+    /// Selectors Parser Error
+    SelectorsParserError,
 }
 
 impl Into<JsValue> for Error {
