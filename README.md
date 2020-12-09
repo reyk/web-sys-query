@@ -9,7 +9,7 @@ approach like React instead (or, in the Rust/WASM world,
 
 `web-sys-query` allows you to port simple jQuery applications to
 Rust/WASM with a familiar API instead of the rather complex
-[web-sys](https://crates.io/web-sys) DOM API.
+[web-sys](https://crates.io/crates/web-sys) DOM API.
 
 ## TODO
 
