@@ -5,7 +5,7 @@
 
 _jQuery is dead_ and everyone agrees that you should use a modern
 approach like React instead (or, in the Rust/WASM world,
-[Yew](https://crates.io/yew)].
+[Yew](https://crates.io/crates/yew)).
 
 `web-sys-query` allows you to port simple jQuery applications to
 Rust/WASM with a familiar API instead of the rather complex
