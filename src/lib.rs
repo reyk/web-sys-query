@@ -1,4 +1,4 @@
-//! Minimal jQuery-like API for web-sys
+//! jQuery-like API for web-sys
 
 mod error;
 mod query;

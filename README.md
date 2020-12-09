@@ -1,5 +1,8 @@
 # jQuery-like API for web-sys
 
+[![Build Status](https://travis-ci.org/reyk/web-sys-query.svg?branch=main)](https://travis-ci.org/reyk/web-sys-query)
+[![License](https://img.shields.io/badge/license-ISC-blue.svg)](https://raw.githubusercontent.com/reyk/web-sys-query/main/LICENSE)
+
 _jQuery is dead_ and everyone agrees that you should use a modern
 approach like React instead (or, in the Rust/WASM world,
 [Yew](https://crates.io/yew)].
