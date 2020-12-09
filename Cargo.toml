@@ -1,6 +1,6 @@
 [package]
 name = "web-sys-query"
-version = "0.0.1-alpha.0"
+version = "0.0.1-alpha.1"
 authors = ["Reyk Floeter <contact@reykfloeter.com>"]
 edition = "2018"
 license = "ISC"
