@@ -1,0 +1,6 @@
+dist: focal
+language: rust
+rust:
+  - stable
+  - beta
+  - nightly

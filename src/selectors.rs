@@ -14,7 +14,7 @@ use selectors::{
     parser::{self, NonTSPseudoClass, SelectorParseErrorKind},
     OpaqueElement, SelectorImpl, SelectorList,
 };
-use std::{borrow::Borrow, fmt, ops::Deref};
+use std::{borrow::Borrow, fmt, ops::Deref, str::FromStr};
 
 #[derive(Debug, Clone)]
 pub struct SelectorTypes;
@@ -168,11 +168,11 @@ impl selectors::Element for Element {
     }
 
     fn prev_sibling_element(&self) -> Option<Self> {
-        self.prev()
+        self.prev(None)
     }
 
     fn next_sibling_element(&self) -> Option<Self> {
-        self.next()
+        self.next(None)
     }
 
     fn is_html_element_in_html_document(&self) -> bool {
@@ -331,8 +331,8 @@ impl fmt::Debug for Selector {
 pub struct Selectors(pub Vec<Selector>);
 
 impl Selectors {
-    pub fn new(s: &str) -> Result<Self, Error> {
-        let mut input = cssparser::ParserInput::new(s);
+    pub fn new(selectors: &str) -> Result<Self, Error> {
+        let mut input = cssparser::ParserInput::new(selectors);
         SelectorList::parse(&Parser, &mut cssparser::Parser::new(&mut input))
             .map(|list| Selectors(list.0.into_iter().map(Selector).collect()))
             .map_err(|_err| Error::SelectorsParserError)
@@ -350,6 +350,14 @@ impl Selectors {
             iter,
             selectors: self,
         }
+    }
+}
+
+impl FromStr for Selectors {
+    type Err = Error;
+
+    fn from_str(selectors: &str) -> Result<Self, Self::Err> {
+        Self::new(selectors)
     }
 }
 

@@ -40,5 +40,16 @@ version = "0.3.46"
 features = [
   "Document",
   "DomParser",
+  "HtmlButtonElement",
+  "HtmlDataElement",
+  "HtmlInputElement",
+  "HtmlLiElement",
+  "HtmlMeterElement",
+  "HtmlOptionElement",
+  "HtmlOutputElement",
+  "HtmlParamElement",
+  "HtmlProgressElement",
+  "HtmlSelectElement",
+  "HtmlTextAreaElement",
   "SupportedType",
 ]

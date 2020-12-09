@@ -1,12 +1,12 @@
-# Minimal jQuery-like API for web-sys
+# jQuery-like API for web-sys
 
 _jQuery is dead_ and everyone agrees that you should use a modern
 approach like React instead (or, in the Rust/WASM world,
 [Yew](https://crates.io/yew)].
 
-But in case you want to port a simple jQuery application to Rust/WASM,
-you can use this crate to query the rather complex
-[web-sys](https://crates.io/web-sys) API with a jQuery-like syntax.
+`web-sys-query` allows you to port simple jQuery applications to
+Rust/WASM with a familiar API instead of the rather complex
+[web-sys](https://crates.io/web-sys) DOM API.
 
 ## TODO
 
@@ -14,3 +14,98 @@ you can use this crate to query the rather complex
 - Unit tests
 - AJAX
 - ...
+
+## API
+
+### Attributes
+
+| jQuery: Attributes   | `Document`      | `Element` +  `Collection`      |
+| -------------------- | --------------- | ------------------------------ |
+| .addClass()          |                 | add_class                      |
+| .attr()              |                 | attr, set_attr                 |
+| .hasClass()          |                 | has_class                      |
+| .html()              |                 | html, set_html                 |
+| .prop()              |                 |                                |
+| .removeAttr()        |                 | remove_attr                    |
+| .removeClass()       |                 | remove_class                   |
+| .removeProp()        |                 |                                |
+| .toggleClass()       |                 | toggle_class                   |
+| .val()               |                 | val, set_val, *_i32, *_f64     |
+
+### Manipulation
+
+| jQuery: Traversing   | `Document`      | `Element` + `Collection`       |
+| -------------------- | --------------- | ------------------------------ |
+| .after()             |                 |                                |
+| .append()            |                 |                                |
+| .appendTo()          |                 |                                |
+| .before()            |                 |                                |
+| .clone()             |                 |                                |
+| .css()               |                 |                                |
+| .css()               |                 |                                |
+| .detach()            |                 |                                |
+| .empty()             |                 |                                |
+| .height()            |                 |                                |
+| .innerHeight()       |                 |                                |
+| .innerWidth()        |                 |                                |
+| .insertAfter()       |                 |                                |
+| .insertBefore()      |                 |                                |
+| $.cssNumber          |                 |                                |
+| $.htmlPrefilter()    |                 |                                |
+| .offset()            |                 |                                |
+| .outerHeight()       |                 |                                |
+| .outerWidth()        |                 |                                |
+| .position()          |                 |                                |
+| .prepend()           |                 |                                |
+| .prependTo()         |                 |                                |
+| .remove()            |                 |                                |
+| .replaceAll()        |                 |                                |
+| .replaceWith()       |                 |                                |
+| .scrollLeft()        |                 |                                |
+| .scrollTop()         |                 |                                |
+| .text()              |                 | text, set_text                 |
+| .unwrap()            |                 |                                |
+| .width()             |                 |                                |
+| .wrap()              |                 |                                |
+| .wrapAll()           |                 |                                |
+| .wrapInner()         |                 |                                |
+
+### Traversing
+
+| jQuery: Traversing   | `Document`      | `Element` + `Collection`       |
+| -------------------- | --------------- | ------------------------------ |
+| .add()               |                 |                                |
+| .addBack()           |                 |                                |
+| ~.andSelf()~         | -               | -                              |
+| .children()          | children        | children                       |
+| .closest()           |                 |                                |
+| .contents()          |                 |                                |
+| .each()              |                 |                                |
+| .end()               |                 |                                |
+| .eq()                |                 |                                |
+| .even()              |                 |                                |
+| .filter()            |                 |                                |
+| .find()              | find            | find                           |
+| .first()             |                 | first                          |
+| .has()               |                 |                                |
+| .is()                |                 |                                |
+| .last()              |                 | last                           |
+| .map()               |                 |                                |
+| .next()              |                 | next                           |
+| .nextAll()           |                 |                                |
+| .nextUntil()         |                 |                                |
+| .not()               |                 |                                |
+| .odd()               |                 |                                |
+| .offsetParent()      |                 |                                |
+| .parent()            |                 | parent                         |
+| .parents()           |                 |                                |
+| .parentsUntil()      |                 |                                |
+| .prev()              |                 | prev                           |
+| .prevAll()           |                 |                                |
+| .prevUntil()         |                 |                                |
+| .siblings()          |                 |                                |
+| .slice()             |                 |                                |
+
+## Copyright and license
+
+Licensed under an OpenBSD-ISC-style license, see [LICENSE] for details.

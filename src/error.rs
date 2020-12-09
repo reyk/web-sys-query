@@ -24,13 +24,16 @@ pub enum Error {
     NotEventTarget,
     /// `Document` without document `Element`
     NoDocumentElement,
+    /// `Element` type does not have '{0}' value
+    #[from(ignore)]
+    NoValue(&'static str),
     /// Cannot remote attribute: '{0}'
     #[from(ignore)]
     CannotRemoveAttribute(String),
-    /// Other Error
-    JsValue(JsValue),
     /// Selectors Parser Error
     SelectorsParserError,
+    /// Other Error
+    JsValue(JsValue),
 }
 
 impl Into<JsValue> for Error {

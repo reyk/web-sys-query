@@ -1,5 +1,9 @@
 //! The main `Query` interface.
 
+mod attributes;
+mod manipulation;
+mod traversing;
+
 use crate::{selectors::Selectors, Error};
 use derive_more::{AsRef, Deref, DerefMut, From, Into};
 use std::{
@@ -24,18 +28,6 @@ impl Document {
         Ok(Self(inner))
     }
 
-    pub fn find(&self, selectors: &str) -> Result<Collection, Error> {
-        let selectors = Selectors::new(selectors)?;
-        Ok(selectors
-            .filter(self.descendants().into_iter())
-            .collect::<Vec<_>>()
-            .into())
-    }
-
-    pub fn children(&self) -> Collection {
-        self.0.children().into()
-    }
-
     pub fn descendants(&self) -> Collection {
         if let Some(root) = self.0.document_element() {
             return Element::from(root).descendants();
@@ -49,90 +41,16 @@ impl Document {
 pub struct Element(web_sys::Element);
 
 impl Element {
-    /// Set inner text.
-    pub fn text(&self, text: &str) -> Result<(), Error> {
-        self.dyn_ref::<web_sys::HtmlElement>()?.set_inner_text(text);
-        Ok(())
-    }
-
-    /// Find elements by selector.
-    pub fn find(&self, selectors: &str) -> Result<Collection, Error> {
-        let selectors = Selectors::new(selectors)?;
-        Ok(selectors
-            .filter(self.descendants().into_iter())
-            .collect::<Vec<_>>()
-            .into())
-    }
-
-    /// Add CSS class.
-    pub fn add_class(&self, class: &str) -> Result<(), Error> {
-        self.0.class_list().add_1(class).map_err(Into::into)
-    }
-
-    /// Check if element has a matching CSS class.
-    pub fn has_class(&self, class: &str) -> bool {
-        self.0.class_list().contains(class)
-    }
-
-    /// Remove CSS class from list.
-    pub fn remove_class(&self, class: &str) -> Result<(), Error> {
-        self.0.class_list().add_1(class).map_err(Into::into)
-    }
-
-    /// Return the matching attribute, if found.
-    pub fn attr(&self, key: &str) -> Option<String> {
-        if key == "id" {
-            return Some(self.0.id());
-        }
-
-        self.0.get_attribute(key)
-    }
-
-    /// Set the attribute to the specified value.
-    pub fn set_attr(&self, key: &str, value: &str) -> Result<(), Error> {
-        if key == "id" {
-            self.0.set_id(value);
-            return Ok(());
-        }
-
-        self.0.set_attribute(key, value).map_err(Into::into)
-    }
-
-    /// Remove the attribute.
-    pub fn remove_attr(&self, key: &str) -> Result<(), Error> {
-        if key == "id" {
-            return Err(Error::CannotRemoveAttribute(self.0.id()));
-        }
-
-        self.0.remove_attribute(key).map_err(Into::into)
-    }
-
-    pub fn parent(&self) -> Option<Self> {
-        self.parent_element().map(Into::into)
-    }
-
-    pub fn prev(&self) -> Option<Self> {
-        self.previous_element_sibling().map(Into::into)
-    }
-
-    pub fn children(&self) -> Collection {
-        self.0.children().into()
-    }
-
     pub fn descendants(&self) -> Collection {
         let mut result = vec![];
         let mut nodes = vec![self.clone()];
         while let Some(node) = nodes.pop() {
             result.push(node.clone());
-            for child in node.children().into_iter() {
+            for child in Collection::from(node.0.children()).into_iter().rev() {
                 nodes.push(child);
             }
         }
         result.into()
-    }
-
-    pub fn next(&self) -> Option<Self> {
-        self.next_element_sibling().map(Into::into)
     }
 
     pub fn dyn_ref<T: JsCast>(&self) -> Result<&T, Error> {
@@ -195,69 +113,11 @@ impl Collection {
         self.0.append(&mut other.0);
     }
 
-    pub fn first(&mut self) -> Result<Element, Error> {
-        self.0.pop_front().ok_or(Error::FirstElementNotFound)
-    }
-
-    pub fn text(&self, text: &str) -> Result<(), Error> {
-        for element in self.0.iter() {
-            element.text(text)?;
-        }
-
-        Ok(())
-    }
-
-    pub fn add_class(&self, class: &str) -> Result<(), Error> {
-        for element in self.0.iter() {
-            element.class_list().add_1(class)?;
-        }
-
-        Ok(())
-    }
-
-    pub fn has_class(&self, class: &str) -> bool {
-        for element in self.0.iter() {
-            if element.class_list().contains(class) {
-                return true;
-            }
-        }
-
-        false
-    }
-
-    pub fn remove_class(&self, class: &str) -> Result<(), Error> {
-        for element in self.0.iter() {
-            element.class_list().remove_1(class)?;
-        }
-
-        Ok(())
-    }
-
-    pub fn attr(&self, key: &str) -> Vec<String> {
-        self.0.iter().filter_map(|elem| elem.attr(key)).collect()
-    }
-
-    pub fn set_attr(&self, key: &str, value: &str) -> Result<(), Error> {
-        for element in self.0.iter() {
-            element.set_attr(key, value)?;
-        }
-
-        Ok(())
-    }
-
-    pub fn remove_attr(&self, key: &str) -> Result<(), Error> {
-        for element in self.0.iter() {
-            element.remove_attr(key)?;
-        }
-
-        Ok(())
-    }
-
-    pub fn children(&self) -> Collection {
+    pub fn descendants(&self) -> Collection {
         let mut all_children = Collection::new();
-        for element in self.0.iter() {
-            all_children.append_collection(element.children());
-        }
+        self.0
+            .iter()
+            .for_each(|elem| all_children.append_collection(elem.descendants()));
         all_children
     }
 }
