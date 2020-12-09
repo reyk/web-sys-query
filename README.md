@@ -111,4 +111,4 @@ Rust/WASM with a familiar API instead of the rather complex
 
 ## Copyright and license
 
-Licensed under an OpenBSD-ISC-style license, see [LICENSE] for details.
+Licensed under an OpenBSD-ISC-style license, see [LICENSE](LICENSE) for details.
