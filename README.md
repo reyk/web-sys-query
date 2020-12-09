@@ -1,5 +1,6 @@
 # jQuery-like API for web-sys
 
+[![docs.rs](https://docs.rs/web-sys-query/badge.svg)](https://docs.rs/web-sys-query)
 [![Build Status](https://travis-ci.org/reyk/web-sys-query.svg?branch=main)](https://travis-ci.org/reyk/web-sys-query)
 [![License](https://img.shields.io/badge/license-ISC-blue.svg)](https://raw.githubusercontent.com/reyk/web-sys-query/main/LICENSE)
 
