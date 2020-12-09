@@ -7,7 +7,7 @@ license = "ISC"
 readme = "README.md"
 description = "jQuery-like API for web-sys"
 repository = "https://github.com/reyk/web-sys-query"
-categories = ["wasm", "web-assembly"]
+categories = ["wasm", "web-programming"]
 keywords = ["wasm", "jquery", "web-sys"]
 
 [badges]
