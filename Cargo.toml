@@ -10,6 +10,9 @@ repository = "https://github.com/reyk/web-sys-query"
 categories = ["wasm", "web-assembly"]
 keywords = ["wasm", "jquery", "web-sys"]
 
+[badges]
+travis-ci = { repository = "reyk/web-sys-query", branch = "main" }
+
 [dependencies]
 cssparser = "0.27.2"
 derive_more = "0.99.11"
