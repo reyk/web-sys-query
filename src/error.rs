@@ -1,8 +1,8 @@
+use crate::Event;
 use derive_more::From;
 use displaydoc::Display;
 use thiserror::Error;
 use wasm_bindgen::JsValue;
-use crate::Event;
 
 #[derive(Debug, Display, Error, From)]
 pub enum Error {

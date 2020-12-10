@@ -9,7 +9,7 @@ mod selectors;
 
 pub use crate::{
     error::Error,
-    query::{Event, Collection, Document, Element},
+    query::{Collection, Document, Element, Event},
     selectors::Selectors,
 };
 
