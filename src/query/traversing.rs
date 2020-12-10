@@ -2,6 +2,7 @@
 
 use super::*;
 
+/// Traversing methods
 impl Element {
     // TODO: .add()
     // TODO: .addBack()
@@ -117,6 +118,7 @@ impl Element {
     // TODO: .slice()
 }
 
+/// Traversing methods
 impl Collection {
     pub fn children(&self, selectors: Option<&Selectors>) -> Collection {
         let mut all_children = Collection::new();
@@ -198,6 +200,7 @@ macro_rules! document {
     };
 }
 
+/// Traversing methods.
 impl Document {
     pub fn children(&self, selectors: Option<&Selectors>) -> Collection {
         document!(self, |elem| elem.children(selectors))

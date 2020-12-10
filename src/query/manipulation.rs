@@ -2,6 +2,7 @@
 
 use super::*;
 
+/// DOM manipulation
 impl Element {
     /// Get the inner text.
     pub fn text(&self) -> Result<String, Error> {
@@ -15,6 +16,7 @@ impl Element {
     }
 }
 
+/// DOM manipulation
 impl Collection {
     pub fn text(&self) -> Vec<String> {
         self.0.iter().filter_map(|elem| elem.text().ok()).collect()

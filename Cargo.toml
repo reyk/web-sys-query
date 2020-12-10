@@ -1,6 +1,6 @@
 [package]
 name = "web-sys-query"
-version = "0.0.1-alpha.3"
+version = "0.0.1-alpha.4"
 authors = ["Reyk Floeter <contact@reykfloeter.com>"]
 edition = "2018"
 license = "ISC"
@@ -35,7 +35,7 @@ features = [
 
 [dependencies.web-sys-query-derive]
 path = "derive"
-version = "0.0.1-alpha.0"
+version = "0.0.1-alpha.1"
 
 [dev-dependencies]
 log = "0.4.11"

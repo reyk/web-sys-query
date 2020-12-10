@@ -2,6 +2,7 @@
 
 use super::*;
 
+/// Attribute manipulation methods
 impl Element {
     /// Add CSS class.
     pub fn add_class(&self, class: &str) -> Result<(), Error> {
@@ -156,6 +157,7 @@ impl Element {
     }
 }
 
+/// Attribute manipulation methods
 impl Collection {
     pub fn add_class(&self, class: &str) -> Result<(), Error> {
         for element in self.0.iter() {

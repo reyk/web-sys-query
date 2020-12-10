@@ -19,6 +19,10 @@ fn derive_on_event_enum(item: ItemEnum) -> syn::Result<TokenStream> {
     let mut set_on_event_handlers = vec![];
     let mut off_event_handlers = vec![];
     let mut event_handlers = vec![];
+    let mut collection_event_handlers = vec![];
+
+    let doc1 = item.attrs.iter().filter(|attr| attr.path.is_ident("doc"));
+    let doc2 = doc1.clone();
 
     let html = quote! {
         let html = self.dyn_ref::<web_sys::HtmlElement>()?;
@@ -68,9 +72,20 @@ fn derive_on_event_enum(item: ItemEnum) -> syn::Result<TokenStream> {
                 Ok(html.#set_ident2(callback))
             }
         });
+
+        collection_event_handlers.push(quote! {
+            fn #get_ident(&self) -> Result<Vec<js_sys::Function>, Error> {
+                self.0.iter().map(|elem| elem.#get_ident()).collect::<Result<Vec<_>, _>>()
+            }
+
+            pub fn #set_ident(&self, #callback) {
+                self.0.iter().for_each(|elem| { elem.#set_ident(callback).ok(); })
+            }
+        });
     }
 
     Ok(quote! {
+        #(#doc1)*
         impl Element {
             pub fn on(&self, event: Event) -> Result<js_sys::Function, Error> {
                 #html
@@ -90,7 +105,7 @@ fn derive_on_event_enum(item: ItemEnum) -> syn::Result<TokenStream> {
                 }
             }
 
-            pub fn set_off(&self, event: Event, #callback) -> Result<(), Error> {
+            pub fn set_off(&self, event: Event) -> Result<(), Error> {
                 #html
 
                 match event {
@@ -100,6 +115,23 @@ fn derive_on_event_enum(item: ItemEnum) -> syn::Result<TokenStream> {
             }
 
             #(#event_handlers)*
+        }
+
+        #(#doc2)*
+        impl Collection {
+            pub fn on(&self, event: Event) -> Result<Vec<js_sys::Function>, Error> {
+                self.0.iter().map(|elem| elem.on(event)).collect::<Result<Vec<_>, _>>()
+            }
+
+            pub fn set_on(&self, event: Event, #callback) {
+                self.0.iter().for_each(|elem| { elem.set_on(event, callback).ok(); })
+            }
+
+            pub fn set_off(&self, event: Event) {
+                self.0.iter().for_each(|elem| { elem.set_off(event).ok(); })
+            }
+
+        #(#collection_event_handlers)*
         }
     })
 }

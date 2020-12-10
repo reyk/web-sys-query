@@ -4,6 +4,7 @@ use super::*;
 use wasm_bindgen::closure::Closure;
 use web_sys_query_derive::OnEvent;
 
+/// Event handlers
 #[derive(Copy, Clone, Debug, OnEvent)]
 pub enum Event {
     Blur,
