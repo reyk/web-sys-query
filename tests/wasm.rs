@@ -2,7 +2,7 @@ wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
 
 use wasm_bindgen_test::*;
 use web_sys::{DomParser, SupportedType};
-use web_sys_query as query;
+use web_sys_query::{self as query, query};
 
 const HTML5_DOC: &str = r#"
 <!DOCTYPE html>
@@ -56,4 +56,21 @@ fn test_order() {
 
     let five = matching.get(4).unwrap();
     assert_eq!(five.local_name(), "h1");
+}
+
+#[wasm_bindgen_test]
+fn test_query_document() {
+    let document = parse_document(HTML5_DOC);
+    let matching = query!(document, "title").unwrap();
+    console_log!("query_document: {:?}", matching);
+
+    let title = matching.get(0).unwrap();
+    assert_eq!(title.text().unwrap(), "Page Title");
+}
+
+#[wasm_bindgen_test]
+fn test_query() {
+    let matching = query!("*").unwrap();
+    console_log!("query: {:?}", matching);
+    assert!(matching.len() > 0);
 }

@@ -33,7 +33,7 @@ pub use crate::{
 macro_rules! query {
     ($obj:ident, $selector:expr) => {
         match AsRef::<str>::as_ref(&$selector).parse() {
-            Ok(selectors) => $obj.find(&selectors),
+            Ok(selectors) => Ok($obj.find(&selectors)),
             Err(err) => Err(err),
         }
     };
