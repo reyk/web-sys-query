@@ -55,7 +55,7 @@ impl Element {
 
     /// Remove CSS class from list.
     pub fn remove_class(&self, class: &str) -> Result<(), Error> {
-        self.0.class_list().add_1(class).map_err(Into::into)
+        self.0.class_list().remove_1(class).map_err(Into::into)
     }
 
     // TODO: .remove_prop()
