@@ -32,11 +32,7 @@ fn parse_document(source: &str) -> query::Document {
 #[wasm_bindgen_test]
 fn test_by_id() {
     let document = parse_document(HTML5_DOC);
-    let hero = document
-        .find(&"#hero".parse().unwrap())
-        .unwrap()
-        .first()
-        .unwrap();
+    let hero = document.find(&"#hero".parse().unwrap()).first().unwrap();
     console_log!("by_id: {:?}", hero);
 
     assert_eq!("hero", hero.attr("id").unwrap());
@@ -46,7 +42,7 @@ fn test_by_id() {
 #[wasm_bindgen_test]
 fn test_by_selectors() {
     let document = parse_document(HTML5_DOC);
-    let matching = document.find(&"body p, #hero".parse().unwrap()).unwrap();
+    let matching = document.find(&"body p, #hero".parse().unwrap());
     console_log!("by_selectors: {:?}", matching);
 
     assert_eq!(matching.len(), 3);
@@ -55,7 +51,7 @@ fn test_by_selectors() {
 #[wasm_bindgen_test]
 fn test_order() {
     let document = parse_document(HTML5_DOC);
-    let matching = document.find(&"*".parse().unwrap()).unwrap();
+    let matching = document.find(&"*".parse().unwrap());
     console_log!("order: {:?}", matching);
 
     let five = matching.get(4).unwrap();

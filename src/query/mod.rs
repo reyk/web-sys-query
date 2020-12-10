@@ -29,10 +29,14 @@ impl Document {
     }
 
     pub fn descendants(&self) -> Collection {
-        if let Some(root) = self.0.document_element() {
-            return Element::from(root).descendants();
-        }
-        Collection::new()
+        self.element()
+            .as_ref()
+            .map(Element::descendants)
+            .unwrap_or_default()
+    }
+
+    pub fn element(&self) -> Option<Element> {
+        self.0.document_element().map(Element::from)
     }
 }
 

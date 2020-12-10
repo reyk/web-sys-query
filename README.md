@@ -46,7 +46,6 @@ Rust/WASM with a familiar API instead of the rather complex
 | .before()            |                 |                                |
 | .clone()             |                 |                                |
 | .css()               |                 |                                |
-| .css()               |                 |                                |
 | .detach()            |                 |                                |
 | .empty()             |                 |                                |
 | .height()            |                 |                                |
@@ -88,11 +87,11 @@ Rust/WASM with a familiar API instead of the rather complex
 | .end()               |                 |                                |
 | .eq()                |                 |                                |
 | .even()              |                 |                                |
-| .filter()            |                 |                                |
+| .filter()            |                 | filter                         |
 | .find()              | find            | find                           |
 | .first()             |                 | first                          |
-| .has()               |                 |                                |
-| .is()                |                 |                                |
+| .has()               |                 | has                            |
+| .is()                |                 | is                             |
 | .last()              |                 | last                           |
 | .map()               |                 |                                |
 | .next()              |                 | next                           |

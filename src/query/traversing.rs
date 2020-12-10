@@ -6,14 +6,14 @@ impl Element {
     // TODO: .add()
     // TODO: .addBack()
 
-    pub fn children(&self, selectors: Option<&Selectors>) -> Result<Collection, Error> {
+    pub fn children(&self, selectors: Option<&Selectors>) -> Collection {
         if let Some(selectors) = selectors {
-            Ok(selectors
+            selectors
                 .filter(Collection::from(self.0.children()).into_iter())
                 .collect::<Vec<_>>()
-                .into())
+                .into()
         } else {
-            Ok(self.0.children().into())
+            self.0.children().into()
         }
     }
 
@@ -23,22 +23,52 @@ impl Element {
     // TODO: .end()
     // TODO: .eq()
     // TODO: .even()
-    // TODO: .filter()
+
+    /// Filter if the element or its decendants matches the selector.
+    ///
+    /// NOTE: `filter([function])` is not implemented and can be done
+    /// with Rust iterators instead.
+    pub fn filter(&self, selectors: &Selectors) -> Option<Self> {
+        if selectors.matches(self) {
+            Some(self.clone())
+        } else {
+            self.has(selectors)
+        }
+    }
 
     /// Find elements by selectors.
-    pub fn find(&self, selectors: &Selectors) -> Result<Collection, Error> {
-        Ok(selectors
+    pub fn find(&self, selectors: &Selectors) -> Collection {
+        selectors
             .filter(self.descendants().into_iter())
             .collect::<Vec<_>>()
-            .into())
+            .into()
     }
 
     pub fn first(&mut self) -> Element {
         self.clone()
     }
 
-    // TODO: .has()
-    // TODO: .is()
+    /// Filter if a decendant matches the selector.
+    pub fn has(&self, selectors: &Selectors) -> Option<Self> {
+        if self
+            .descendants()
+            .iter()
+            .any(|elem| selectors.matches(elem))
+        {
+            Some(self.clone())
+        } else {
+            None
+        }
+    }
+
+    /// Check if the element matches the selectors.
+    pub fn is(&self, selectors: &Selectors) -> bool {
+        selectors.matches(self)
+            || self
+                .descendants()
+                .iter()
+                .any(|elem| selectors.matches(elem))
+    }
 
     pub fn last(&mut self) -> Element {
         self.clone()
@@ -88,19 +118,27 @@ impl Element {
 }
 
 impl Collection {
-    pub fn children(&self, selectors: Option<&Selectors>) -> Result<Collection, Error> {
+    pub fn children(&self, selectors: Option<&Selectors>) -> Collection {
         let mut all_children = Collection::new();
         for element in self.0.iter() {
-            all_children.append_collection(element.children(selectors)?);
+            all_children.append_collection(element.children(selectors));
         }
-        Ok(all_children)
+        all_children
     }
 
-    pub fn find(&self, selectors: &Selectors) -> Result<Collection, Error> {
-        Ok(selectors
+    pub fn filter(&self, selectors: &Selectors) -> Collection {
+        self.0
+            .iter()
+            .filter_map(|elem| elem.filter(selectors))
+            .collect::<Vec<_>>()
+            .into()
+    }
+
+    pub fn find(&self, selectors: &Selectors) -> Collection {
+        selectors
             .filter(self.descendants().into_iter())
             .collect::<Vec<_>>()
-            .into())
+            .into()
     }
 
     pub fn first(&mut self) -> Result<Element, Error> {
@@ -108,6 +146,18 @@ impl Collection {
             .front()
             .ok_or(Error::FirstElementNotFound)
             .map(ToOwned::to_owned)
+    }
+
+    pub fn has(&self, selectors: &Selectors) -> Collection {
+        self.0
+            .iter()
+            .filter_map(|elem| elem.has(selectors))
+            .collect::<Vec<_>>()
+            .into()
+    }
+
+    pub fn is(&self, selectors: &Selectors) -> bool {
+        self.0.iter().any(|elem| elem.is(selectors))
     }
 
     pub fn last(&mut self) -> Result<Element, Error> {
@@ -142,15 +192,18 @@ impl Collection {
     }
 }
 
+macro_rules! document {
+    ($self:ident, $cb:expr) => {
+        $self.element().map($cb).unwrap_or_default()
+    };
+}
+
 impl Document {
-    pub fn find(&self, selectors: &Selectors) -> Result<Collection, Error> {
-        Ok(selectors
-            .filter(self.descendants().into_iter())
-            .collect::<Vec<_>>()
-            .into())
+    pub fn children(&self, selectors: Option<&Selectors>) -> Collection {
+        document!(self, |elem| elem.children(selectors))
     }
 
-    pub fn children(&self) -> Collection {
-        self.0.children().into()
+    pub fn find(&self, selectors: &Selectors) -> Collection {
+        document!(self, |elem| elem.find(selectors))
     }
 }

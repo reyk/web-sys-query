@@ -1,4 +1,7 @@
 //! jQuery-like API for web-sys
+//!
+//! See [here](https://github.com/reyk/web-sys-query/blob/main/README.md)
+//! for more information.
 
 mod error;
 mod query;
