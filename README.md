@@ -36,6 +36,50 @@ Rust/WASM with a familiar API instead of the rather complex
 | .toggleClass()       |                 | toggle_class                   |
 | .val()               |                 | val, set_val, *_i32, *_f64     |
 
+### Events
+
+| jQuery: Attributes   | `Document`      | `Element` +  `Collection`      |
+| -------------------- | --------------- | ------------------------------ |
+| ~.bind()~            |                 |                                |
+| .blur()              |                 | blur, set_blur                 |
+| .change()            |                 | change, set_change             |
+| .click()             |                 | click, set_click               |
+| .contextmenu()       |                 | context_menu, set_context_menu |
+| .dblclick()          |                 | dbl_click, set_dbl_click       |
+| ~.delegate()~        |                 |                                |
+| ~.die()~             |                 |                                |
+| ~.error()~           |                 |                                |
+| .focus()             |                 | focus, set_focus               |
+| .focusin()           |                 |                                |
+| .focusout()          |                 |                                |
+| .hover()             |                 |                                |
+| .keydown()           |                 | key_down, set_key_down         |
+| .keypress()          |                 | key_press, set_key_press       |
+| .keyup()             |                 | key_up, set_key_up             |
+| ~.live()~            |                 |                                |
+| .load()              |                 |                                |
+| .mousedown()         |                 | mouse_down, set_mouse_down     |
+| .mouseenter()        |                 | mouse_enter, set_mouse_enter   |
+| .mouseleave()        |                 | mouse_leave, set_mouse_leave   |
+| .mousemove()         |                 | mouse_move, set_mouse_move     |
+| .mouseout()          |                 | mouse_out, set_mouse_out       |
+| .mouseover()         |                 | mouse_over, set_mouse_over     |
+| .mouseup()           |                 | mouse_up, set_mouse_up         |
+| .off()               |                 | set_off                        |
+| .on()                |                 | on, set_on                     |
+| .one()               |                 |                                |
+| .ready()             |                 |                                |
+| .resize()            |                 | resize, set_resize             |
+| .scroll()            |                 | scroll, set_scroll             |
+| .select()            |                 | select, set_select             |
+| .submit()            |                 | submit, set_submit             |
+| ~.toggle()~          |                 |                                |
+| .trigger()           |                 |                                |
+| .triggerHandler()    |                 |                                |
+| ~.unbind()~          |                 |                                |
+| ~.undelegate()~      |                 |                                |
+| ~.unload()~          |                 |                                |
+
 ### Manipulation
 
 | jQuery: Traversing   | `Document`      | `Element` + `Collection`       |

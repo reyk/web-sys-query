@@ -1,6 +1,7 @@
 //! The main `Query` interface.
 
 mod attributes;
+mod events;
 mod manipulation;
 mod traversing;
 
@@ -12,7 +13,9 @@ use std::{
     fmt,
 };
 use wasm_bindgen::JsCast;
-use web_sys::{Event, HtmlCollection, HtmlElement};
+use web_sys::{HtmlCollection, HtmlElement};
+
+pub use events::Event;
 
 /// Document with jQuery-like methods.
 #[derive(AsRef, Clone, Debug, Deref, DerefMut, From, Into)]
@@ -107,10 +110,10 @@ impl TryFrom<Document> for Element {
     }
 }
 
-impl TryFrom<Event> for Element {
+impl TryFrom<web_sys::Event> for Element {
     type Error = Error;
 
-    fn try_from(event: Event) -> Result<Element, Self::Error> {
+    fn try_from(event: web_sys::Event) -> Result<Element, Self::Error> {
         if let Some(target) = event.target() {
             Ok(Element::from(
                 target

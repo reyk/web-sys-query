@@ -1,6 +1,6 @@
 [package]
 name = "web-sys-query"
-version = "0.0.1-alpha.2"
+version = "0.0.1-alpha.3"
 authors = ["Reyk Floeter <contact@reykfloeter.com>"]
 edition = "2018"
 license = "ISC"
@@ -33,6 +33,9 @@ features = [
   "Window",
 ]
 
+[dependencies.web-sys-query-derive]
+path = "derive"
+
 [dev-dependencies]
 log = "0.4.11"
 console_log = "0.2.0"
@@ -55,4 +58,10 @@ features = [
   "HtmlSelectElement",
   "HtmlTextAreaElement",
   "SupportedType",
+]
+
+[workspace]
+members = [
+  ".",
+  "derive"
 ]

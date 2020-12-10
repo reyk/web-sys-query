@@ -328,6 +328,7 @@ impl fmt::Debug for Selector {
     }
 }
 
+/// CSS3 path selectors
 pub struct Selectors(pub Vec<Selector>);
 
 impl Selectors {
