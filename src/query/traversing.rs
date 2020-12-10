@@ -194,7 +194,7 @@ impl Collection {
 
 macro_rules! document {
     ($self:ident, $cb:expr) => {
-        $self.element().map($cb).unwrap_or_default()
+        Element::try_from($self).map($cb).unwrap_or_default()
     };
 }
 

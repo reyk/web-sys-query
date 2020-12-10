@@ -24,6 +24,8 @@ pub enum Error {
     NotEventTarget,
     /// `Document` without document `Element`
     NoDocumentElement,
+    /// `Event` does not have a target element
+    NoTargetElement,
     /// `Element` type does not have '{0}' value
     #[from(ignore)]
     NoValue(&'static str),

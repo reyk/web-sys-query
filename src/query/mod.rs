@@ -12,7 +12,7 @@ use std::{
     fmt,
 };
 use wasm_bindgen::JsCast;
-use web_sys::{HtmlCollection, HtmlElement};
+use web_sys::{Event, HtmlCollection, HtmlElement};
 
 /// Document with jQuery-like methods.
 #[derive(AsRef, Clone, Debug, Deref, DerefMut, From, Into)]
@@ -29,14 +29,10 @@ impl Document {
     }
 
     pub fn descendants(&self) -> Collection {
-        self.element()
+        Element::try_from(self)
             .as_ref()
             .map(Element::descendants)
             .unwrap_or_default()
-    }
-
-    pub fn element(&self) -> Option<Element> {
-        self.0.document_element().map(Element::from)
     }
 }
 
@@ -100,6 +96,30 @@ impl TryFrom<&Document> for Element {
             .document_element()
             .map(Into::into)
             .ok_or(Error::NoDocumentElement)
+    }
+}
+
+impl TryFrom<Document> for Element {
+    type Error = Error;
+
+    fn try_from(document: Document) -> Result<Element, Self::Error> {
+        Element::try_from(&document)
+    }
+}
+
+impl TryFrom<Event> for Element {
+    type Error = Error;
+
+    fn try_from(event: Event) -> Result<Element, Self::Error> {
+        if let Some(target) = event.target() {
+            Ok(Element::from(
+                target
+                    .dyn_into::<web_sys::Element>()
+                    .map_err(|_| Error::NoTargetElement)?,
+            ))
+        } else {
+            Err(Error::NoTargetElement)
+        }
     }
 }
 
