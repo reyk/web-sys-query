@@ -123,9 +123,9 @@ Rust/WASM with a familiar API instead of the rather complex
 | -------------------- | --------------- | ------------------------------ |
 | .add()               |                 |                                |
 | .addBack()           |                 |                                |
-| ~.andSelf()~         | -               | -                              |
+| ~.andSelf()~         |                 |                                |
 | .children()          | children        | children                       |
-| .closest()           |                 |                                |
+| .closest()           |                 | closest                        |
 | .contents()          |                 |                                |
 | .each()              |                 |                                |
 | .end()               |                 |                                |
@@ -141,7 +141,7 @@ Rust/WASM with a familiar API instead of the rather complex
 | .next()              |                 | next                           |
 | .nextAll()           |                 |                                |
 | .nextUntil()         |                 |                                |
-| .not()               |                 |                                |
+| .not()               |                 | not                            |
 | .odd()               |                 |                                |
 | .offsetParent()      |                 |                                |
 | .parent()            |                 | parent                         |

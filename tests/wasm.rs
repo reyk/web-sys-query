@@ -1,5 +1,6 @@
 wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
 
+use std::convert::TryFrom;
 use wasm_bindgen_test::*;
 use web_sys::{DomParser, SupportedType};
 use web_sys_query::{self as query, query};
@@ -32,7 +33,7 @@ fn parse_document(source: &str) -> query::Document {
 #[wasm_bindgen_test]
 fn test_by_id() {
     let document = parse_document(HTML5_DOC);
-    let hero = document.find(&"#hero".parse().unwrap()).first().unwrap();
+    let hero = document.find("#hero").unwrap().first().unwrap();
     console_log!("by_id: {:?}", hero);
 
     assert_eq!("hero", hero.attr("id").unwrap());
@@ -42,7 +43,7 @@ fn test_by_id() {
 #[wasm_bindgen_test]
 fn test_by_selectors() {
     let document = parse_document(HTML5_DOC);
-    let matching = document.find(&"body p, #hero".parse().unwrap());
+    let matching = document.find("body p, #hero").unwrap();
     console_log!("by_selectors: {:?}", matching);
 
     assert_eq!(matching.len(), 3);
@@ -51,11 +52,20 @@ fn test_by_selectors() {
 #[wasm_bindgen_test]
 fn test_order() {
     let document = parse_document(HTML5_DOC);
-    let matching = document.find(&"*".parse().unwrap());
+    let matching = document.find("*").unwrap();
     console_log!("order: {:?}", matching);
 
+    let zero = matching.get(0).unwrap();
+    assert_eq!(zero.local_name(), "html", "{:?}", matching);
     let five = matching.get(4).unwrap();
-    assert_eq!(five.local_name(), "h1");
+    assert_eq!(five.local_name(), "h1", "{:?}", matching);
+}
+
+#[wasm_bindgen_test]
+fn test_document_root() {
+    let document = parse_document(HTML5_DOC);
+    let root = query::Element::try_from(&document).unwrap();
+    assert_eq!(root.local_name(), "html", "{:?}", document);
 }
 
 #[wasm_bindgen_test]

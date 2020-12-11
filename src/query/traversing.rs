@@ -7,90 +7,94 @@ impl Element {
     // TODO: .add()
     // TODO: .addBack()
 
-    pub fn children(&self, selectors: Option<&Selectors>) -> Collection {
+    pub fn children(&self, selectors: Option<&str>) -> Result<Collection, Error> {
+        let children = Collection::from(self.0.children());
         if let Some(selectors) = selectors {
-            selectors
-                .filter(Collection::from(self.0.children()).into_iter())
-                .collect::<Vec<_>>()
-                .into()
+            children
+                .iter()
+                .filter_map(|elem| match elem.is(selectors) {
+                    Err(err) => Some(Err(err)),
+                    Ok(true) => Some(Ok(elem.clone())),
+                    Ok(false) => None,
+                })
+                .collect::<Result<Vec<Element>, Error>>()
+                .map(Into::into)
         } else {
-            self.0.children().into()
+            Ok(children)
         }
     }
 
-    // TODO: .closest()
+    /// Find the closets element that matches the selector.
+    pub fn closest(&self, selectors: &str) -> Result<Option<Self>, Error> {
+        self.0
+            .closest(selectors)
+            .map(|elem| elem.map(Into::into))
+            .map_err(Into::into)
+    }
+
     // TODO: .contents()
     // TODO: .each()
     // TODO: .end()
     // TODO: .eq()
     // TODO: .even()
 
-    /// Filter if the element or its decendants matches the selector.
-    ///
-    /// NOTE: `filter([function])` is not implemented and can be done
-    /// with Rust iterators instead.
-    pub fn filter(&self, selectors: &Selectors) -> Option<Self> {
-        if selectors.matches(self) {
-            Some(self.clone())
-        } else {
-            self.has(selectors)
-        }
+    /// Filter if the element matches the selector.
+    pub fn filter(&self, selectors: &str) -> Result<Option<Self>, Error> {
+        self.is(selectors)
+            .map(|result| if result { Some(self.clone()) } else { None })
     }
 
     /// Find elements by selectors.
-    pub fn find(&self, selectors: &Selectors) -> Collection {
-        selectors
-            .filter(self.descendants().into_iter())
-            .collect::<Vec<_>>()
-            .into()
+    pub fn find(&self, selectors: &str) -> Result<Collection, Error> {
+        self.0
+            .query_selector_all(selectors)
+            .map(Into::into)
+            .map_err(Into::into)
     }
 
-    pub fn first(&mut self) -> Element {
+    pub fn first(&self) -> Element {
         self.clone()
     }
 
     /// Filter if a decendant matches the selector.
-    pub fn has(&self, selectors: &Selectors) -> Option<Self> {
-        if self
-            .descendants()
-            .iter()
-            .any(|elem| selectors.matches(elem))
-        {
-            Some(self.clone())
-        } else {
-            None
-        }
+    pub fn has(&self, selectors: &str) -> Result<Option<Self>, Error> {
+        self.0
+            .query_selector(selectors)
+            .map(|elem| elem.map(|_| self.clone()))
+            .map_err(Into::into)
     }
 
     /// Check if the element matches the selectors.
-    pub fn is(&self, selectors: &Selectors) -> bool {
-        selectors.matches(self)
-            || self
-                .descendants()
-                .iter()
-                .any(|elem| selectors.matches(elem))
+    pub fn is(&self, selectors: &str) -> Result<bool, Error> {
+        self.0.matches(selectors).map_err(Into::into)
     }
 
-    pub fn last(&mut self) -> Element {
+    pub fn last(&self) -> Element {
         self.clone()
     }
 
     // TODO: .map()
 
-    pub fn next(&self, selectors: Option<&Selectors>) -> Option<Self> {
-        if let Some(element) = self.next_element_sibling().map(Into::into) {
-            if matches!(selectors, Some(selectors) if !selectors.matches(&element)) {
-                return None;
+    pub fn next(&self, selectors: Option<&str>) -> Result<Option<Self>, Error> {
+        if let Some(element) = self.next_element_sibling().map(Self::from) {
+            match selectors {
+                Some(selectors) => element.filter(selectors),
+                None => Ok(Some(element)),
             }
-            Some(element)
         } else {
-            None
+            Ok(None)
         }
     }
 
     // TODO: .nextAll()
     // TODO: .nextUntil()
-    // TODO: .not()
+
+    /// Filter if the element does not matche the selector.
+    pub fn not(&self, selectors: &str) -> Result<Option<Self>, Error> {
+        self.is(selectors)
+            .map(|result| if !result { Some(self.clone()) } else { None })
+    }
+
     // TODO: .odd()
     // TODO: .offsetParent()
 
@@ -101,14 +105,14 @@ impl Element {
     // TODO: .parents()
     // TODO: .parentsUntil()
 
-    pub fn prev(&self, selectors: Option<&Selectors>) -> Option<Self> {
-        if let Some(element) = self.previous_element_sibling().map(Into::into) {
-            if matches!(selectors, Some(selectors) if !selectors.matches(&element)) {
-                return None;
+    pub fn prev(&self, selectors: Option<&str>) -> Result<Option<Self>, Error> {
+        if let Some(element) = self.previous_element_sibling().map(Self::from) {
+            match selectors {
+                Some(selectors) => element.filter(selectors),
+                None => Ok(Some(element)),
             }
-            Some(element)
         } else {
-            None
+            Ok(None)
         }
     }
 
@@ -120,93 +124,82 @@ impl Element {
 
 /// Traversing methods
 impl Collection {
-    pub fn children(&self, selectors: Option<&Selectors>) -> Collection {
-        let mut all_children = Collection::new();
-        for element in self.0.iter() {
-            all_children.append_collection(element.children(selectors));
-        }
-        all_children
+    pub fn children(&self, selectors: Option<&str>) -> Result<Collection, Error> {
+        self.iter().map(|elem| elem.children(selectors)).collect()
     }
 
-    pub fn filter(&self, selectors: &Selectors) -> Collection {
-        self.0
+    pub fn filter(&self, selectors: &str) -> Result<Collection, Error> {
+        self.iter()
+            .filter_map(|elem| elem.filter(selectors).transpose())
+            .collect()
+    }
+
+    pub fn find(&self, selectors: &str) -> Result<Collection, Error> {
+        self.iter().map(|elem| elem.find(selectors)).collect()
+    }
+
+    pub fn first(&self) -> Option<Element> {
+        self.0.front().map(Clone::clone)
+    }
+
+    pub fn has(&self, selectors: &str) -> Result<Collection, Error> {
+        self.iter()
+            .filter_map(|elem| elem.has(selectors).transpose())
+            .collect()
+    }
+
+    pub fn is(&self, selectors: &str) -> Result<bool, Error> {
+        let is = self
             .iter()
-            .filter_map(|elem| elem.filter(selectors))
-            .collect::<Vec<_>>()
-            .into()
+            .map(|elem| elem.is(selectors))
+            .collect::<Result<Vec<_>, Error>>()?;
+        Ok(is.contains(&true))
     }
 
-    pub fn find(&self, selectors: &Selectors) -> Collection {
-        selectors
-            .filter(self.descendants().into_iter())
-            .collect::<Vec<_>>()
-            .into()
+    pub fn last(&self) -> Option<Element> {
+        self.0.back().map(Clone::clone)
     }
 
-    pub fn first(&mut self) -> Result<Element, Error> {
-        self.0
-            .front()
-            .ok_or(Error::FirstElementNotFound)
-            .map(ToOwned::to_owned)
-    }
-
-    pub fn has(&self, selectors: &Selectors) -> Collection {
-        self.0
-            .iter()
-            .filter_map(|elem| elem.has(selectors))
-            .collect::<Vec<_>>()
-            .into()
-    }
-
-    pub fn is(&self, selectors: &Selectors) -> bool {
-        self.0.iter().any(|elem| elem.is(selectors))
-    }
-
-    pub fn last(&mut self) -> Result<Element, Error> {
-        self.0
-            .back()
-            .ok_or(Error::FirstElementNotFound)
-            .map(ToOwned::to_owned)
-    }
-
-    pub fn next(&self, selectors: Option<&Selectors>) -> Collection {
-        self.0
-            .iter()
-            .filter_map(|elem| elem.next(selectors))
-            .collect::<Vec<_>>()
-            .into()
+    pub fn next(&self, selectors: Option<&str>) -> Result<Collection, Error> {
+        self.iter()
+            .filter_map(|elem| elem.next(selectors).transpose())
+            .collect()
     }
 
     pub fn parent(&self) -> Collection {
-        self.0
-            .iter()
-            .filter_map(|elem| elem.parent())
-            .collect::<Vec<_>>()
-            .into()
+        self.iter().filter_map(|elem| elem.parent()).collect()
     }
 
-    pub fn prev(&self, selectors: Option<&Selectors>) -> Collection {
-        self.0
-            .iter()
-            .filter_map(|elem| elem.prev(selectors))
-            .collect::<Vec<_>>()
-            .into()
+    pub fn prev(&self, selectors: Option<&str>) -> Result<Collection, Error> {
+        self.iter()
+            .filter_map(|elem| elem.prev(selectors).transpose())
+            .collect()
     }
-}
-
-macro_rules! document {
-    ($self:ident, $cb:expr) => {
-        Element::try_from($self).map($cb).unwrap_or_default()
-    };
 }
 
 /// Traversing methods.
 impl Document {
-    pub fn children(&self, selectors: Option<&Selectors>) -> Collection {
-        document!(self, |elem| elem.children(selectors))
+    pub fn children(&self, selectors: Option<&str>) -> Result<Collection, Error> {
+        let children = Collection::from(self.0.children());
+        if let Some(selectors) = selectors {
+            children
+                .iter()
+                .filter_map(|elem| match elem.is(selectors) {
+                    Err(err) => Some(Err(err)),
+                    Ok(true) => Some(Ok(elem.clone())),
+                    Ok(false) => None,
+                })
+                .collect::<Result<Vec<Element>, Error>>()
+                .map(Into::into)
+        } else {
+            Ok(children)
+        }
     }
 
-    pub fn find(&self, selectors: &Selectors) -> Collection {
-        document!(self, |elem| elem.find(selectors))
+    pub fn find(&self, selectors: &str) -> Result<Collection, Error> {
+        self.0
+            .query_selector_all(selectors)
+            .map(Into::into)
+            .map_err(Into::into)
     }
 }

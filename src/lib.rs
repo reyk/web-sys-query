@@ -5,12 +5,10 @@
 
 mod error;
 mod query;
-mod selectors;
 
 pub use crate::{
     error::Error,
     query::{Collection, Document, Element, Event},
-    selectors::Selectors,
 };
 
 /// `query!` macro to find elements.
@@ -31,15 +29,12 @@ pub use crate::{
 /// ```
 #[macro_export]
 macro_rules! query {
-    ($obj:ident, $selector:expr) => {
-        match AsRef::<str>::as_ref(&$selector).parse() {
-            Ok(selectors) => Ok($obj.find(&selectors)),
-            Err(err) => Err(err),
-        }
+    ($obj:ident, $selectors:expr) => {
+        $obj.find($selectors)
     };
-    ($selector:expr) => {
+    ($selectors:expr) => {
         match web_sys_query::Document::new() {
-            Ok(document) => query!(document, $selector),
+            Ok(document) => query!(document, $selectors),
             Err(err) => Err(err),
         }
     };

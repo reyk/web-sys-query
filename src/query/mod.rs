@@ -5,15 +5,16 @@ mod events;
 mod manipulation;
 mod traversing;
 
-use crate::{selectors::Selectors, Error};
+use crate::Error;
 use derive_more::{AsRef, Deref, DerefMut, From, Into};
 use std::{
     collections::VecDeque,
     convert::{TryFrom, TryInto},
     fmt,
+    iter::FromIterator,
 };
 use wasm_bindgen::JsCast;
-use web_sys::{HtmlCollection, HtmlElement};
+use web_sys::{HtmlCollection, HtmlElement, NodeList};
 
 pub use events::Event;
 
@@ -127,7 +128,7 @@ impl TryFrom<web_sys::Event> for Element {
 }
 
 /// HTML `Collection` that can be used as an iterator
-#[derive(AsRef, Clone, Debug, Default, Deref, DerefMut)]
+#[derive(AsRef, Clone, Debug, Default, Deref, DerefMut, From, Into)]
 pub struct Collection(pub VecDeque<Element>);
 
 impl Collection {
@@ -169,6 +170,47 @@ impl From<HtmlCollection> for Collection {
         }
 
         Self(inner)
+    }
+}
+
+impl From<NodeList> for Collection {
+    fn from(list: NodeList) -> Self {
+        let mut inner = VecDeque::new();
+
+        for i in 0..list.length() {
+            if let Some(item) = list.item(i) {
+                // Only add `Element` nodes, ignore the others.
+                if let Ok(element) = item.dyn_into::<web_sys::Element>() {
+                    inner.push_back(element.into());
+                }
+            }
+        }
+
+        Self(inner)
+    }
+}
+
+impl From<Element> for Collection {
+    fn from(element: Element) -> Self {
+        Self(vec![element].into())
+    }
+}
+
+impl FromIterator<Collection> for Collection {
+    fn from_iter<I: IntoIterator<Item = Collection>>(iter: I) -> Self {
+        iter.into_iter().map(|coll| coll.0).flatten().collect()
+    }
+}
+
+impl FromIterator<VecDeque<Element>> for Collection {
+    fn from_iter<I: IntoIterator<Item = VecDeque<Element>>>(iter: I) -> Self {
+        iter.into_iter().flatten().collect()
+    }
+}
+
+impl FromIterator<Element> for Collection {
+    fn from_iter<I: IntoIterator<Item = Element>>(iter: I) -> Self {
+        VecDeque::from_iter(iter).into()
     }
 }
 
