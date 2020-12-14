@@ -109,9 +109,9 @@ fn test_query() {
 fn test_form() {
     let document = parse_document(HTML5_DOC);
     let form = query!(document, "form").unwrap().first().unwrap();
-    let kv: HashMap<_, _> = form.serialize_array().unwrap();
+    let kv: HashMap<_, String> = form.serialize_array().unwrap();
     console_log!("form: {:?}", kv);
-    assert_eq!(kv.len(), 7);
+    assert_eq!(kv.len(), 6);
     assert_eq!(kv.get("a").unwrap(), "1");
 }
 
@@ -121,7 +121,7 @@ fn test_form_element() {
     let form = query!(document, "form").unwrap().first().unwrap();
     let kv: query::FormData = form.serialize_array().unwrap();
     console_log!("form_element: {:?}", kv);
-    assert_eq!(kv.len(), 7);
+    assert_eq!(kv.len(), 6);
 }
 
 #[wasm_bindgen_test]

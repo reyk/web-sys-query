@@ -16,19 +16,27 @@ impl Element {
     /// trait bounds, for example `Vec<(String, String)>` or
     /// `HashMap<String, String>`.  To get a jQuery-compatible return
     /// type, use the `FormData` type that is provided by this crate.
-    pub fn serialize_array<T>(&self) -> Result<T, Error>
+    pub fn serialize_array<T, V>(&self) -> Result<T, Error>
     where
-        T: FromIterator<(String, String)>,
+        T: FromIterator<(String, V)>,
+        V: From<String>,
     {
         let form = self.dyn_ref::<HtmlFormElement>()?;
 
         Collection::from(form.elements())
             .into_iter()
-            .filter(|elem| !elem.is(":disabled").unwrap_or_default())
+            .filter(|elem| {
+                elem.attr("name").is_some()
+                    && !elem.is(":disabled").unwrap_or_default()
+                    && !((elem.is("option").unwrap_or_default()
+                        || elem.attr("type").as_deref() == Some("radio")
+                        || elem.attr("type").as_deref() == Some("checkbox"))
+                        && !elem.is(":checked").unwrap_or_default())
+            })
             .map(|elem| {
-                let key = elem.attr("name").ok_or(Error::NoDocumentElement)?;
+                let key = elem.attr("name").ok_or(Error::NoValue("name"))?;
                 let value = elem.val()?;
-                Ok((key, value))
+                Ok((key, value.into()))
             })
             .collect::<Result<T, Error>>()
     }
@@ -42,14 +50,15 @@ impl Collection {
     /// trait bounds, for example `Vec<(String, String)>` or
     /// `HashMap<String, String>`.  To get a jQuery-compatible return
     /// type, use the `FormData` type that is provided by this crate.
-    pub fn serialize_array<T>(&self) -> Result<T, Error>
+    pub fn serialize_array<T, V>(&self) -> Result<T, Error>
     where
-        T: FromIterator<(String, String)> + IntoIterator + FromIterator<<T as IntoIterator>::Item>,
+        T: FromIterator<(String, V)> + IntoIterator + FromIterator<<T as IntoIterator>::Item>,
+        V: From<String>,
     {
         Ok(self
             .0
             .iter()
-            .map(|elem| elem.serialize_array::<T>())
+            .map(|elem| elem.serialize_array())
             .collect::<Result<Vec<T>, Error>>()?
             .into_iter()
             .flatten()
