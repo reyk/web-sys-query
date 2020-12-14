@@ -19,6 +19,12 @@ Rust/WASM with a familiar API instead of the rather complex
 - AJAX
 - ...
 
+## Feature flags
+
+- `serde-serialize`: use `serde_derive` to enable `Serialize` and
+  `Deserialize` support on types such as `FormData` (disabled by
+  default).
+
 ## API
 
 ### Attributes
@@ -152,6 +158,14 @@ Rust/WASM with a familiar API instead of the rather complex
 | .prevUntil()         |                 |                                |
 | .siblings()          |                 |                                |
 | .slice()             |                 |                                |
+
+### Helper Functions
+
+| jQuery: Traversing   | `Document`      | `Element` + `Collection`       |
+| -------------------- | --------------- | ------------------------------ |
+| jQuery.param()       |                 |                                |
+| .serialize()         |                 |                                |
+| .serializeArray()    |                 | serialize_array, `FormData`    |
 
 ## Copyright and license
 

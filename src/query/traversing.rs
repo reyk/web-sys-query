@@ -1,6 +1,9 @@
 //! Traversing
 
-use super::*;
+use crate::{
+    error::Error,
+    query::{Collection, Document, Element},
+};
 
 /// Traversing methods
 impl Element {

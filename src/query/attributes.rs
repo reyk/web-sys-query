@@ -1,6 +1,10 @@
 //! Attributes
 
-use super::*;
+use crate::{
+    error::Error,
+    query::{Collection, Element},
+};
+use wasm_bindgen::JsCast;
 
 /// Attribute manipulation methods
 impl Element {

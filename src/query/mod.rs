@@ -2,10 +2,11 @@
 
 mod attributes;
 mod events;
+mod helpers;
 mod manipulation;
 mod traversing;
 
-use crate::Error;
+use crate::error::Error;
 use derive_more::{AsRef, Deref, DerefMut, From, Into};
 use std::{
     collections::VecDeque,
@@ -17,6 +18,7 @@ use wasm_bindgen::JsCast;
 use web_sys::{HtmlCollection, HtmlElement, NodeList};
 
 pub use events::Event;
+pub use helpers::{FormData, FormValue};
 
 /// Document with jQuery-like methods.
 #[derive(AsRef, Clone, Debug, Deref, DerefMut, From, Into)]
@@ -142,11 +144,7 @@ impl Collection {
     }
 
     pub fn descendants(&self) -> Collection {
-        let mut all_children = Collection::new();
-        self.0
-            .iter()
-            .for_each(|elem| all_children.append_collection(elem.descendants()));
-        all_children
+        self.0.iter().map(|elem| elem.descendants()).collect()
     }
 }
 

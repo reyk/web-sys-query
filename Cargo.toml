@@ -1,6 +1,6 @@
 [package]
 name = "web-sys-query"
-version = "0.0.1-alpha.4"
+version = "0.0.1-alpha.5"
 authors = ["Reyk Floeter <contact@reykfloeter.com>"]
 edition = "2018"
 license = "ISC"
@@ -19,6 +19,9 @@ displaydoc = "0.1.7"
 js-sys = "0.3.46"
 thiserror = "1.0.22"
 wasm-bindgen = "0.2.69"
+
+serde = { version = "1.0.118", optional = true }
+serde_derive = { version = "1.0.118", optional = true }
 
 [dependencies.web-sys]
 version = "0.3.46"
@@ -47,6 +50,7 @@ features = [
   "DomParser",
   "HtmlButtonElement",
   "HtmlDataElement",
+  "HtmlFormElement",
   "HtmlInputElement",
   "HtmlLiElement",
   "HtmlMeterElement",
@@ -65,3 +69,7 @@ members = [
   ".",
   "derive"
 ]
+
+[features]
+default = []
+serde-serialize = [ "serde", "serde_derive" ]

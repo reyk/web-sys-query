@@ -8,7 +8,7 @@ mod query;
 
 pub use crate::{
     error::Error,
-    query::{Collection, Document, Element, Event},
+    query::{Collection, Document, Element, Event, FormData},
 };
 
 /// `query!` macro to find elements.

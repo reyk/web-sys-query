@@ -1,6 +1,9 @@
 //! Manipulation of the DOM
 
-use super::*;
+use crate::{
+    error::Error,
+    query::{Collection, Element},
+};
 
 /// DOM manipulation
 impl Element {

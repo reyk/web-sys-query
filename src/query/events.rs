@@ -1,7 +1,10 @@
 //! Events
 
-use super::*;
-use wasm_bindgen::closure::Closure;
+use crate::{
+    error::Error,
+    query::{Collection, Element},
+};
+use wasm_bindgen::{closure::Closure, JsCast};
 use web_sys_query_derive::OnEvent;
 
 /// Event handlers
