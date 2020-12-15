@@ -36,7 +36,7 @@ features = [
 
 [dependencies.web-sys-query-derive]
 path = "derive"
-version = "0.0.1-alpha.1"
+version = "0.0.1-alpha.5"
 
 [dev-dependencies]
 log = "0.4.11"
