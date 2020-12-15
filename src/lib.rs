@@ -29,7 +29,7 @@ pub use crate::{
 /// ```
 #[macro_export]
 macro_rules! query {
-    ($obj:ident, $selectors:expr) => {
+    ($obj:expr, $selectors:expr) => {
         $obj.find($selectors)
     };
     ($selectors:expr) => {
