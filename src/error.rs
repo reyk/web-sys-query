@@ -44,11 +44,11 @@ pub enum Error {
     JsValue(JsValue),
 }
 
-impl Into<JsValue> for Error {
-    fn into(self) -> JsValue {
-        match self {
+impl From<Error> for JsValue {
+    fn from(error: Error) -> Self {
+        match error {
             Error::JsValue(value) => value,
-            _ => JsValue::from_str(&self.to_string()),
+            _ => JsValue::from_str(&error.to_string()),
         }
     }
 }
